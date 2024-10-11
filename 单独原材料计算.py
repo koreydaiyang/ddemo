@@ -19,7 +19,7 @@ def convert_df(df):
 
 server = '192.168.0.253'
 database = 'zhanghm_all'
-driver = '{/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.0.so.1.1}'
+driver = '{ODBC Driver 17 for SQL Server}'
 
 st.title('达利订单成本查询系统')
 
