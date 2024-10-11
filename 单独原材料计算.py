@@ -7,6 +7,19 @@ st.set_page_config(
     page_title='达利订单成本查询系统',
 )
 
+@st.cache_resource
+def connect():
+    connection = pyodbc.connect(connection_string)
+    cursor = connection.cursor()
+    return cursor
+
+@st.cache_data
+def convert_df(df):
+    return df.to_excel(index=False).encode('utf-8')
+
+server = '192.168.0.253'
+database = 'zhanghm_all'
+driver = '{SQL Server}'
 
 st.title('达利订单成本查询系统')
 
@@ -28,55 +41,42 @@ if 'infos' not in st.session_state:
 if 'gf' not in st.session_state:
     st.session_state['gf'] = ''
 
-# Create a form to capture database connection details
-with st.form("db_connection_form"):
-    username = st.text_input("输入用户名")
-    password = st.text_input("输入密码", type="password")
+if 'login' not in st.session_state:
+    st.session_state['login'] = False
 
-    # Submit button
-    submit = st.form_submit_button("链接数据库")
+loginpage = st.empty()
 
-if submit:
-    if not username or not password:
-        st.error("必须输入所有的数据")
-        st.stop()
-    else:
-        st.success("链接成功")
+if not st.session_state['login']:
+    with loginpage.form("db_connection_form"):
+        username = st.text_input("输入用户名")
+        password = st.text_input("输入密码", type="password")
+
+        # Submit button
+        submit = st.form_submit_button("链接数据库")
+
+        if submit:
+            if not username or not password:
+                st.error("必须输入所有的数据")
+                st.stop()
+            else:
+                connection_string = f'DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}'
+
+                # Establish a connection to the database
+                try:
+                    st.session_state['cursor'] = connect()
+                    
+                    # Execute a simple query to test the connection
+                    st.session_state['cursor'].execute("SELECT @@version;") 
+                    row = st.session_state['cursor'].fetchone()
+                    print(f"SQL Server version: {row[0]}")
+                    st.session_state['login'] = True
+                    loginpage.empty()
+
+                except Exception as e:
+                    print(f"Error connecting to SQL Server: {e}")
 
 if st.session_state['cursor'] == '':
     st.stop()
-
-# Define the connection parameters
-server = '192.168.0.253'
-database = 'zhanghm_all'
-driver = '{SQL Server}'
-
-# Create a connection string
-connection_string = f'DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password}'
-
-@st.cache_resource
-def connect():
-    connection = pyodbc.connect(connection_string)
-    cursor = connection.cursor()
-    return cursor
-
-@st.cache_data
-def convert_df(df):
-    return df.to_excel(index=False).encode('utf-8')
-
-# Establish a connection to the database
-try:
-    st.session_state['cursor'] = connect()
-    
-    # Execute a simple query to test the connection
-    st.session_state['cursor'].execute("SELECT @@version;") 
-    row = st.session_state['cursor'].fetchone()
-    print(f"SQL Server version: {row[0]}")
-
-    st.session_state['cursor'].execute('USE zhanghm_all')
-
-except Exception as e:
-    print(f"Error connecting to SQL Server: {e}")
 
 # Display form for text input
 with st.form("text_input_form"):
