@@ -28,11 +28,27 @@ if 'infos' not in st.session_state:
 if 'gf' not in st.session_state:
     st.session_state['gf'] = ''
 
+# Create a form to capture database connection details
+with st.form("db_connection_form"):
+    username = st.text_input("输入用户名")
+    password = st.text_input("输入密码", type="password")
+
+    # Submit button
+    submit = st.form_submit_button("链接数据库")
+
+if submit:
+    if not username or not password:
+        st.error("必须输入所有的数据")
+        st.stop()
+    else:
+        st.success("链接成功")
+
+if st.session_state['cursor'] == '':
+    st.stop()
+
 # Define the connection parameters
 server = '192.168.0.253'
 database = 'zhanghm_all'
-username = 'yy'
-password = 'dlf@147258'
 driver = '{SQL Server}'
 
 # Create a connection string
