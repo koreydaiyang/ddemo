@@ -46,7 +46,7 @@ def connect():
 
 @st.cache_data
 def convert_df(df):
-return df.to_excel(index=False).encode('utf-8')
+    return df.to_excel(index=False).encode('utf-8')
 
 # Establish a connection to the database
 try:
@@ -157,16 +157,6 @@ if submit_button_price:
     st.write(f'合计原材料成本价： {hejiyuancailiao}')
     st.write(f'工费： {st.session_state["gf"]}')
     st.header(f"报价为 {round(baojia, 2)}")
-
-# csv = convert_df(st.session_state['maindf'])
-
-# st.download_button(
-#     "Press to Download",
-#     csv,
-#     "file.excel",
-#     "text/excel",
-#     key='download-excel'
-# )
 
     # Function to convert DataFrame to Excel
     def to_excel(df):
