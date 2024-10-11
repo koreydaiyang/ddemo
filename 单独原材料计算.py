@@ -73,7 +73,7 @@ if not st.session_state['login']:
                     loginpage.empty()
 
                 except Exception as e:
-                    print(f"Error connecting to SQL Server: {e}")
+                    st.write(f"Error connecting to SQL Server: {e}")
 
 if st.session_state['cursor'] == '':
     st.stop()
