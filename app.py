@@ -2,7 +2,6 @@ import streamlit as st
 from PIL import Image
 import io
 import numpy as np
-import matplotlib.image as img
 import os
 from sklearn.cluster import KMeans
 
@@ -16,6 +15,7 @@ def process(img_arr, n_clusters):
     rgb_cols = kmeans_model.cluster_centers_
     img_quant = np.reshape(rgb_cols[cluster_labels],(h,w,c))
     return img_quant
+
 
 # Page Configuration
 st.set_page_config(
